@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+    <script>
+      console.warn = () => {};
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+     body{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          background-color: blue; /* Change background color here */
+      }
+
+      .calcBody {
+          max-width: 28rem;
+          margin: 5%;
+          padding: 3%;
+      }
+  </style>
+  </head>
+  <body class="w-full h-screen bg-purple-800 bg-gradient-to-br from-blue-300 bg-opacity-25">
+    
+    <a href="/Main.html" class="bg-stone-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Go Back</a>
+    <div class="calcBody rounded overflow-hidden shadow-2xl bg-pink-700 bg-opacity-75 bg-gradient-to-tr from-gray-800 flex max-w-lg">
+
+      
+      <div class="w-full h-full " >
+
+        <div class="flex mb-1 justify-end ">
+
+          <div class="output ">
+            <div class="previousNumber"></div>
+            <div class="currentNumber">0</div>
+          </div>
+          <button class="clear">AC</button>
+        </div>
+        <div class="flex mb-1 justify-center items-center">
+          <button class="number">7</button>
+          <button class="number">8</button>
+          <button class="number">9</button>
+          <button class="operator">/</button>
+        </div>
+        <div class="flex mb-1 justify-center items-center">
+          <button class="number">4</button>
+          <button class="number">5</button>
+          <button class="number">6</button>
+          <button class="operator">x</button>
+        </div>
+        <div class="flex mb-1 justify-center items-center">
+          <button class="number">1</button>
+          <button class="number">2</button>
+          <button class="number">3</button>
+          <button class="operator">-</button>
+        </div>
+        <div class="flex mb-1 justify-center items-center">
+          <button class="decimal">.</button>
+          <button class="number">0</button>
+          <button class="equal">=</button>
+          <button class="operator">+</button>
+        </div>
+      </div>
+    </div>
+    <a href="/Main.html" class="bg-stone-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Go Back</a>
+  </body>
+  <script>let currentNum = "";
+    let previousNum = "";
+    let operator = "";
+    
+    const currentDisplayNumber = document.querySelector(".currentNumber");
+    const previousDisplayNumber = document.querySelector(".previousNumber");
+    
+    window.addEventListener("keydown", handleKeyPress);
+    
+    const equal = document.querySelector(".equal");
+    equal.addEventListener("click", () => {
+      if (currentNum != "" && previousNum != "") {
+        compute();
+      }
+    });
+    
+    const decimal = document.querySelector(".decimal");
+    decimal.addEventListener("click", () => {
+      addDecimal();
+    });
+    
+    const clear = document.querySelector(".clear");
+    clear.addEventListener("click", clearCalculator);
+    
+    const numberButtons = document.querySelectorAll(".number");
+    
+    const operators = document.querySelectorAll(".operator");
+    
+    numberButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        handleNumber(e.target.textContent);
+      });
+    });
+    
+    function handleNumber(number) {
+      if (previousNum !== "" && currentNum !== "" && operator === "") {
+        previousNum = "";
+        currentDisplayNumber.textContent = currentNum;
+      }
+      if (currentNum.length <= 11) {
+        currentNum += number;
+        currentDisplayNumber.textContent = currentNum;
+      }
+    }
+    
+    operators.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        handleOperator(e.target.textContent);
+      });
+    });
+    
+    function handleOperator(op) {
+      if (previousNum === "") {
+        previousNum = currentNum;
+        operatorCheck(op);
+      } else if (currentNum === "") {
+        operatorCheck(op);
+      } else {
+        compute();
+        operator = op;
+        currentDisplayNumber.textContent = "0";
+        previousDisplayNumber.textContent = previousNum + " " + operator;
+      }
+    }
+    
+    function operatorCheck(text) {
+      operator = text;
+      previousDisplayNumber.textContent = previousNum + " " + operator;
+      currentDisplayNumber.textContent = "0";
+      currentNum = "";
+    }
+    
+    function compute() {
+      previousNum = Number(previousNum);
+      currentNum = Number(currentNum);
+    
+      if (operator === "+") {
+        previousNum += currentNum;
+      } else if (operator === "-") {
+        previousNum -= currentNum;
+      } else if (operator === "x") {
+        previousNum *= currentNum;
+      } else if (operator === "/") {
+        if (currentNum <= 0) {
+          previousNum = "Error";
+          displayResults();
+          return;
+        }
+        previousNum /= currentNum;
+      }
+      previousNum = roundNumber(previousNum);
+      previousNum = previousNum.toString();
+      displayResults();
+    }
+    
+    function roundNumber(num) {
+      return Math.round(num * 100000) / 100000;
+    }
+    
+    function displayResults() {
+      if (previousNum.length <= 11) {
+        currentDisplayNumber.textContent = previousNum;
+      } else {
+        currentDisplayNumber.textContent = previousNum.slice(0, 11) + "...";
+      }
+      previousDisplayNumber.textContent = "";
+      operator = "";
+      currentNum = "";
+    }
+    
+    function clearCalculator() {
+      currentNum = "";
+      previousNum = "";
+      operator = "";
+      currentDisplayNumber.textContent = "0";
+      previousDisplayNumber.textContent = "";
+    }
+    
+    function addDecimal() {
+      if (!currentNum.includes(".")) {
+        currentNum += ".";
+        currentDisplayNumber.textContent = currentNum;
+      }
+    }
+    
+    function handleKeyPress(e) {
+      e.preventDefault();
+      if (e.key >= 0 && e.key <= 9) {
+        handleNumber(e.key);
+      }
+      if (
+        e.key === "Enter" ||
+        (e.key === "=" && currentNum != "" && previousNum != "")
+      ) {
+        compute();
+      }
+      if (e.key === "+" || e.key === "-" || e.key === "/") {
+        handleOperator(e.key);
+      }
+      if (e.key === "*") {
+        handleOperator("x");
+      }
+      if (e.key === ".") {
+        addDecimal();
+      }
+      if (e.key === "Backspace") {
+        handleDelete();
+      }
+    }
+    
+    function handleDelete() {
+      if (currentNum !== "") {
+        currentNum = currentNum.slice(0, -1);
+        currentDisplayNumber.textContent = currentNum;
+        if (currentNum === "") {
+          currentDisplayNumber.textContent = "0";
+        }
+      }
+      if (currentNum === "" && previousNum !== "" && operator === "") {
+        previousNum = previousNum.slice(0, -1);
+        currentDisplayNumber.textContent = previousNum;
+      }
+    }</script>
+  <script>
+  const bodyClass = "bg-red-800 bg-gradient-to-br from-blue-300 bg-opacity-25";
+    const bdy = document.querySelector("body");
+    bodyClass.split(" ").forEach((cls) => bdy.classList.add(cls));
+    
+    const calcBodyClass =
+      "max-w-lg rounded overflow-hidden shadow-2xl bg-pink-700 bg-opacity-75 bg-gradient-to-tr from-gray-800 flex";
+    const calcBody = document.querySelector(".calcBody");
+    calcBodyClass.split(" ").forEach((cls) => calcBody.classList.add(cls));
+    
+    const outputClass =
+      "flex flex-col w-3/4 h-12 justify-center items-end m-1 bg-gray-300 text-gray-900 font-semibold px-2 border border-black hover:border-gray-500 rounded";
+    const output = document.querySelector(".output");
+    outputClass.split(" ").forEach((cls) => output.classList.add(cls));
+    
+    const previousNumberClass =
+      "flex max-w-lg h-1/3 pb-5 pt-1 text-gray-600 text-xs";
+    const previousNumber = document.querySelector(".previousNumber");
+    previousNumberClass
+      .split(" ")
+      .forEach((cls) => previousNumber.classList.add(cls));
+    
+    const currentNumberClass = "flex max-w-lg h-2/3 pb-2 text-xl";
+    const currentNumber = document.querySelector(".currentNumber");
+    currentNumberClass
+      .split(" ")
+      .forEach((cls) => currentNumber.classList.add(cls));
+    
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach((btn) => {
+      addClasses(btn);
+    });
+    
+    function addClasses(button) {
+      const btnNumberClass = "hover:bg-green-500 border-green-500";
+      const btnClearClass = "hover:bg-orange-500 border-orange-500";
+      const btnOpClass = "hover:bg-blue-500 border-blue-500";
+      const btnEqClass = "hover:bg-red-500 border-red-500";
+      const btnDecClass = "hover:bg-yellow-500 border-yellow-500";
+    
+      if (button.classList.value === "number") {
+        btnNumberClass.split(" ").forEach((cls) => button.classList.add(cls));
+      } else if (button.classList.value === "operator") {
+        btnOpClass.split(" ").forEach((cls) => button.classList.add(cls));
+      } else if (button.classList.value === "clear") {
+        btnClearClass.split(" ").forEach((cls) => button.classList.add(cls));
+      } else if (button.classList.value === "equal") {
+        btnEqClass.split(" ").forEach((cls) => button.classList.add(cls));
+      } else if (button.classList.value === "decimal") {
+        btnDecClass.split(" ").forEach((cls) => button.classList.add(cls));
+      }
+    
+      const baseClass =
+        "number flex w-12 h-12 justify-center items-center m-1 font-bold py-2 px-2 border hover:border-transparent rounded text-white border-2 text-2xl";
+      baseClass.split(" ").forEach((cls) => button.classList.add(cls));
+    }
+    
+    
+      function changeBackgroundColor(color) {
+        const body = document.querySelector("body");
+        body.style.backgroundColor = color;
+      }
+    
+      changeBackgroundColor("darkblue");
+    </script>
+    <script>
+    
+      function changeBackgroundColor(element, color) {
+        const targetElement = document.querySelector(element);
+        targetElement.style.backgroundColor = color;
+      }
+      changeBackgroundColor(".calcBody", "black");
+    </script>
+    <script>
+    
+      function setBorderRadius(element, radius) {
+        const targetElement = document.querySelector(element);
+        targetElement.style.borderRadius = radius;
+      }
+    
+      setBorderRadius(".calcBody", "50px");
+    </script>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="i.css">    
+  <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+  
+  <h1 class="mt-64">Hangman Game</h1>
+  <div id="game-container">
+    <div id="word-display"></div>
+    <div id="incorrect-guesses"></div>
+    <input type="text" id="letter-input">
+    <button id="guess-button">Guess</button>
+    <p id="game-status"></p>
+    <div id="remaining-tries">Үлдсэн амь: <span  id="remaining-tries-count">6</span></div>
+  </div>
+  <a href="/Main.html" class="bg-stone-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Go Back</a>
+  <script src="i.js">
+  </script>
+</body>
+</html>
